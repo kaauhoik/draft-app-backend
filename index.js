@@ -5,6 +5,7 @@ const cors = require('cors');
 
 app.use(cors())
 app.use(express.json());
+app.use(express.static('dist/draft-app'));
 
 let pelaajat = [
     { id: 1, lipukkeet: 5, nimi: 'Kalle' },
@@ -28,9 +29,9 @@ const generateId = () => {
     return maxId + 1
 }
 
-app.get('/', (req, res) => {
-    res.send('<h1>Hello World!</h1>')
-})
+// app.get('/', (req, res) => {
+//     res.send('<h1>Hello World!</h1>')
+// })
 
 app.get('/api/pelaajat', (req, res) => {
     res.json(pelaajat)
