@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/arvonta
+Content-Type: application/json
+
+  
+ [
+        {"id": 1, "nimi": "Kalle", "lipukkeet": 1},
+        {"id": 2, "nimi": "Kalle1", "lipukkeet": 5},
+        {"id": 3, "nimi": "Kalle2", "lipukkeet": 10}
+    ]
+    
