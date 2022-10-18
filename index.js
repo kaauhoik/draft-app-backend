@@ -62,18 +62,48 @@ app.get('/api/pelaajat/:id', (request, response) => {
     }
 })
 
+app.put('/api/pelaajat', (request,response) => {
+    const body = request.body;
+
+    if (!body.nimi || !body.lipukkeet) {
+        return response.status(400).json({
+            error: 'Nimi or Lipukkeet was missing.'
+        })
+    }
+
+    if (pelaajat.find(p => p.nimi === body.nimi && p.id !== body.id)) {
+        return response.status(400).json({
+            error: 'A player with the same name already exists.'
+        })
+    }
+    const pelaaja = pelaajat.find( p=> p.id === body.id)
+    if (pelaaja) {
+        const changedPelaaja = {...pelaaja, nimi: body.nimi, lipukkeet:body.lipukkeet};
+        pelaajat = pelaajat.map( p => p.id !== body.id? p : changedPelaaja )
+        response.json(changedPelaaja);s
+    } else {
+        const newPelaaja = {
+            id: generateId(),
+            nimi: body.nimi,
+            lipukkeet: body.lipukkeet
+        }
+        pelaajat = pelaajat.concat(newPelaaja)
+        response.json(newPelaaja);
+    }
+})
+
 app.post('/api/pelaajat', (request, response) => {
     const body = request.body
 
     if (!body.nimi || !body.lipukkeet) {
         return response.status(400).json({
-            error: 'nimi or lipukkeet missing'
+            error: 'Nimi or Lipukkeet was missing.'
         })
     }
 
     if (pelaajat.find(p => p.nimi === body.nimi)) {
         return response.status(400).json({
-            error: 'player with the same name already exists.'
+            error: 'A player with the same name already exists.'
         })
     }
 
@@ -120,7 +150,7 @@ app.post('/api/arvonta', (req, res) => {
 
     if (!pelaajat) {
         return res.status(400).json({
-            error: 'content missing'
+            error: 'Content missing.'
         })
     }
     let arvonta = [];
