@@ -67,7 +67,7 @@ pelaajatRouter.post('/', async (request, response) => {
         })
     }
     const results = await Pelaaja.findOne({ nimi: body.nimi })
-    if (results.length > 0) {
+    if (results) {
         return response.status(400).json({
             error: 'A player with the same name already exists.'
         })

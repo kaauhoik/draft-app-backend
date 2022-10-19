@@ -1,1 +1,1 @@
-GET http://localhost:3001/api/pelaajat/2
+GET http://localhost:3001/api/pelaajat/634ea373391780d0fafbda70
