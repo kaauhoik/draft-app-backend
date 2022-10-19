@@ -6,10 +6,7 @@ const arvontaSchema = new mongoose.Schema({
         minLength: 3,
         required: true
     },
-    lipukkeet: {
-        type: Number,
-        min: 1,
-    },
+    jarjestys: Number,
     ip: String
 })
 

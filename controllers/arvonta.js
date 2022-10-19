@@ -1,36 +1,43 @@
 const arvontaRouter = require('express').Router()
-
-
-
-let arvotutPelaajat = [];
-
+const Arvonta = require('../models/arvonta')
 
 
 //GET arvonta
-arvontaRouter.get('/', (req, res) => {
-    res.json(arvotutPelaajat)
+arvontaRouter.get('/', async (req, res) => {
+    const ip = req.headers.ip
+    const arvotut = await Arvonta.find({ip: ip})
+    res.json(arvotut)
 })
 
 //GET arvonta/{id}
-arvontaRouter.get('//:id', (request, response) => {
-    const id = Number(request.params.id)
-    const pelaaja = arvotutPelaajat.find(pelaaja => pelaaja.id === id)
-    if (pelaaja) {
-        response.json(pelaaja)
-    } else {
-        response.status(404).end()
+arvontaRouter.get('/:id', (request, response) => {
+    const id = request.params.id
+    
+    try {
+        Arvonta.findById(id).then(pelaaja => {
+            if (pelaaja) {
+                response.json(pelaaja)
+            } else {    
+                response.status(404).end()
+            }
+        })
+    } catch (error) {
+        next(error)   
     }
 })
 
 //DELETE arvonta
-arvontaRouter.delete('/', (request, response) => {
-
-    arvotutPelaajat = [];
+arvontaRouter.delete('/', async (request, response) => {
+    const ip = request.headers.ip
+    if (ip) {
+        await Arvonta.deleteMany({ip: ip})
+    }
     response.status(204).end()
 })
 //POST arvonta
-arvontaRouter.post('/', (req, res) => {
+arvontaRouter.post('/', async (req, res) => {
     const pelaajat = req.body;
+    const ip = req.headers.ip
 
     if (!pelaajat) {
         return res.status(400).json({
@@ -44,12 +51,24 @@ arvontaRouter.post('/', (req, res) => {
         };
     });
 
-    console.log(arvonta);
+    console.log(arvonta.length);
     const next = arvonta[Math.floor(Math.random() * arvonta.length)];
     const arvottu = pelaajat.find(p => p.id === next);
-    arvotutPelaajat = arvotutPelaajat.concat({ ...arvottu, jarjestys: arvotutPelaajat.length + 1 });
-    console.log(arvotutPelaajat);
-    res.json(arvottu);
+    try {
+        //arvotutPelaajat = arvotutPelaajat.concat({ ...arvottu, jarjestys: arvotutPelaajat.length + 1 });
+        const jarjestysNo  = await Arvonta.countDocuments({ip: ip}) + 1
+        const dbArvottu = new Arvonta({
+            nimi: arvottu.nimi,
+            jarjestys: jarjestysNo,
+            ip: ip
+        })
+        await dbArvottu.save()
+        res.json(arvottu);
+
+    } catch (error) {
+        next(error)
+    }
+
 
 })
 module.exports = arvontaRouter

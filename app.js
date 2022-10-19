@@ -1,4 +1,5 @@
 const config = require('./utils/config')
+const cookieSession = require('cookie-session')
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -25,6 +26,10 @@ app.get('/', (req, res) => {
 
 app.use(cors())
 app.use(express.json());
+app.use(cookieSession ({
+    name: 'session',
+    keys: ['avainNro1', 'avainNro2']
+}))
 app.use(middleware.requestLogger)
 app.use('/api/pelaajat', pelaajatRouter)
 app.use('/api/arvonta', arvontaRouter)

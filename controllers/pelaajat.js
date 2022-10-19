@@ -5,7 +5,8 @@ const ObjectId = require('mongodb').ObjectId;
 
 // GET pelaajat
 pelaajatRouter.get('/', (req, res) => {
-    Pelaaja.find({}).then(pelaajat =>
+    const ip = req.headers.ip
+    Pelaaja.find({ip: ip}).then(pelaajat =>
         res.json(pelaajat)
     )
 })
@@ -35,7 +36,7 @@ pelaajatRouter.put('/:id', async (request, response) => {
     
     try {
         if (body.nimi) {
-            const sameNameDiffId = await Pelaaja.find({ nimi: body.nimi }).where({ _id: { $ne: o_id } })
+            const sameNameDiffId = await Pelaaja.find({ nimi: body.nimi, ip: ip }).where({ _id: { $ne: o_id } })
             console.log(sameNameDiffId)
             if (sameNameDiffId.length > 0) {
                 return response.status(400).json({
@@ -60,13 +61,14 @@ pelaajatRouter.put('/:id', async (request, response) => {
 //POST pelaajat
 pelaajatRouter.post('/', async (request, response) => {
     const body = request.body
+    const ip = request.headers.ip
 
     if (!body.nimi || !body.lipukkeet) {
         return response.status(400).json({
             error: 'Nimi or Lipukkeet was missing.'
         })
     }
-    const results = await Pelaaja.findOne({ nimi: body.nimi })
+    const results = await Pelaaja.findOne({ nimi: body.nimi, ip: ip })
     if (results) {
         return response.status(400).json({
             error: 'A player with the same name already exists.'
@@ -74,7 +76,8 @@ pelaajatRouter.post('/', async (request, response) => {
     } else {
         const pelaaja = new Pelaaja({
             nimi: body.nimi,
-            lipukkeet: body.lipukkeet
+            lipukkeet: body.lipukkeet,
+            ip: ip
         });
         try {
             const savedPelaaja = await pelaaja.save()

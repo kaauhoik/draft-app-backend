@@ -1,4 +1,5 @@
 POST http://localhost:3001/api/pelaajat
+ip: 12345
 Content-Type: application/json
 
 {
