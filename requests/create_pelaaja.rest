@@ -2,6 +2,6 @@ POST http://localhost:3001/api/pelaajat
 Content-Type: application/json
 
 {
-    "nimi": "testi nimi",
+    "nimi": "testi nimi3",
     "lipukkeet": 20
 }

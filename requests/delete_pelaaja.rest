@@ -1,1 +1,1 @@
-DELETE http://localhost:3001/api/pelaajat/10
+DELETE http://localhost:3001/api/pelaajat/634eac8675ebb4be83afd5d4
