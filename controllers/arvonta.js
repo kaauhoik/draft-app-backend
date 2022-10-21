@@ -61,6 +61,7 @@ arvontaRouter.post('/', async (req, res, next) => {
         const dbArvottu = new Arvonta({
             nimi: arvottu.nimi,
             jarjestys: jarjestysNo,
+            id: arvottu.id,
             ip: ip
         })
         await dbArvottu.save()

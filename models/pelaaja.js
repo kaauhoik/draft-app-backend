@@ -12,6 +12,7 @@ const pelaajaSchema = new mongoose.Schema({
     min: 1,
   },
   ip: String
+  
 })
 
 pelaajaSchema.set('toJSON', {
