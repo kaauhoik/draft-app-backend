@@ -10,9 +10,9 @@ arvontaRouter.get('/', async (req, res) => {
 })
 
 //GET arvonta/{id}
-arvontaRouter.get('/:id', (request, response) => {
-    const id = request.params.id
-    
+arvontaRouter.get('/:id', (request, response,next) => {
+    const id = request.params.id || 0
+    if (!ObjectId.isValid(id)) return response.status(404).end()
     try {
         Arvonta.findById(id).then(pelaaja => {
             if (pelaaja) {
@@ -29,13 +29,14 @@ arvontaRouter.get('/:id', (request, response) => {
 //DELETE arvonta
 arvontaRouter.delete('/', async (request, response) => {
     const ip = request.headers.ip
+    console.log(ip)
     if (ip) {
         await Arvonta.deleteMany({ip: ip})
     }
     response.status(204).end()
 })
 //POST arvonta
-arvontaRouter.post('/', async (req, res) => {
+arvontaRouter.post('/', async (req, res, next) => {
     const pelaajat = req.body;
     const ip = req.headers.ip
 
@@ -52,8 +53,8 @@ arvontaRouter.post('/', async (req, res) => {
     });
 
     console.log(arvonta.length);
-    const next = arvonta[Math.floor(Math.random() * arvonta.length)];
-    const arvottu = pelaajat.find(p => p.id === next);
+    const nextP = arvonta[Math.floor(Math.random() * arvonta.length)];
+    const arvottu = pelaajat.find(p => p.id === nextP);
     try {
         //arvotutPelaajat = arvotutPelaajat.concat({ ...arvottu, jarjestys: arvotutPelaajat.length + 1 });
         const jarjestysNo  = await Arvonta.countDocuments({ip: ip}) + 1

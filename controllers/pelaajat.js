@@ -10,56 +10,9 @@ pelaajatRouter.get('/', (req, res) => {
         res.json(pelaajat)
     )
 })
-// GET pelaajat/{id}
-pelaajatRouter.get('/:id', (request, response) => {
-    const id = request.params.id
-    
-    try {
-        Pelaaja.findById(id).then(pelaaja => {
-            if (pelaaja) {
-                response.json(pelaaja)
-            } else {
-                response.status(404).end()
-            }
-        })
-    } catch (error) {
-        next(error)   
-    }
-
-})
-
-//PUT pelaajat/{id}
-pelaajatRouter.put('/:id', async (request, response) => {
-    const id = request.params.id
-    const body = request.body;
-    const o_id = new ObjectId(id);
-    
-    try {
-        if (body.nimi) {
-            const sameNameDiffId = await Pelaaja.find({ nimi: body.nimi, ip: ip }).where({ _id: { $ne: o_id } })
-            console.log(sameNameDiffId)
-            if (sameNameDiffId.length > 0) {
-                return response.status(400).json({
-                    error: 'A player with the same name already exists.'
-                })
-            }
-        }
-        const pelaaja = {
-            nimi: body.nimi,
-            lipukkeet: body.lipukkeet
-        }
-        const updatedPelaaja = await Pelaaja.findByIdAndUpdate(id, pelaaja, { new: true, runValidators: true, context: 'query' })
-        if (!updatedPelaaja) return response.status(404).end()
-        response.json(updatedPelaaja);
-    }
-    catch (error) {
-        next(error)
-    }
-
-})
 
 //POST pelaajat
-pelaajatRouter.post('/', async (request, response) => {
+pelaajatRouter.post('/', async (request, response, next) => {
     const body = request.body
     const ip = request.headers.ip
 
@@ -89,9 +42,58 @@ pelaajatRouter.post('/', async (request, response) => {
 
     }
 })
+// GET pelaajat/{id}
+pelaajatRouter.get('/:id', (request, response, next) => {
+    const id = request.params.id 
+    if (!ObjectId.isValid(id)) return response.status(404).end()
+    try {
+        Pelaaja.findById(id).then(pelaaja => {
+            if (pelaaja) {
+                response.json(pelaaja)
+            } else {
+                response.status(404).end()
+            }
+        })
+    } catch (error) {
+        next(error)   
+    }
+
+})
+
+//PUT pelaajat/{id}
+pelaajatRouter.put('/:id', async (request, response, next) => {
+    const id = request.params.id
+    const body = request.body;
+    const o_id = new ObjectId(id);
+    
+    try {
+        if (body.nimi) {
+            const sameNameDiffId = await Pelaaja.find({ nimi: body.nimi, ip: ip }).where({ _id: { $ne: o_id } })
+            console.log(sameNameDiffId)
+            if (sameNameDiffId.length > 0) {
+                return response.status(400).json({
+                    error: 'A player with the same name already exists.'
+                })
+            }
+        }
+        const pelaaja = {
+            nimi: body.nimi,
+            lipukkeet: body.lipukkeet
+        }
+        const updatedPelaaja = await Pelaaja.findByIdAndUpdate(id, pelaaja, { new: true, runValidators: true, context: 'query' })
+        if (!updatedPelaaja) return response.status(404).end()
+        response.json(updatedPelaaja);
+    }
+    catch (error) {
+        next(error)
+    }
+
+})
+
+
 
 //DELETE pelaajat/{id}
-pelaajatRouter.delete('/:id', async (request, response) => {
+pelaajatRouter.delete('/:id', async (request, response, next) => {
     const id = request.params.id
     try {
         await Pelaaja.findByIdAndDelete(id)

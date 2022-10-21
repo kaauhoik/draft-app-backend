@@ -1,2 +1,2 @@
 GET http://localhost:3001/api/pelaajat
-ip: 12345
+ip: 82.203.167.79
